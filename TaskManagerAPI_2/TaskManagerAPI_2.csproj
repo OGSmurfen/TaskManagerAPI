@@ -4,10 +4,11 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>d833ef7a-3972-41e3-a5cc-60d01215aa04</UserSecretsId>
+    <UserSecretsId>3e2997b8-a6ae-4ae0-8758-79add3648277</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.7">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -22,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

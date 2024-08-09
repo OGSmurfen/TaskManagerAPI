@@ -5,33 +5,34 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using TaskManagerAPI.Data;
-using TaskManagerAPI.Models;
+using TaskManagerAPI_2.Data;
+using TaskManagerAPI_2.DTOs;
+using TaskManagerAPI_2.Models;
 
-namespace TaskManagerAPI.Controllers
+namespace TaskManagerAPI_2.Controllers
 {
-    //[Route("api/[controller]")]
-    [Route("/")]
+    [Route("api/[controller]")]
     [ApiController]
     public class TaskModelsController : ControllerBase
     {
-        private readonly TaskManagerApiContext _context;
+        private readonly TaskDbContext _context;
 
-        public TaskModelsController(TaskManagerApiContext context)
+        public TaskModelsController(TaskDbContext context)
         {
             _context = context;
         }
 
         // GET: api/TaskModels
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TaskModel>>> GetTasks()
+        public async Task<ActionResult<IEnumerable<TaskDTO>>> GetTasks()
         {
-            return await _context.Tasks.ToListAsync();
+            return await _context.Tasks.Select(x => TaskToDTO(x)).ToListAsync();
         }
+
 
         // GET: api/TaskModels/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<TaskModel>> GetTaskModel(int id)
+        public async Task<ActionResult<TaskDTO>> GetTaskModel(int id)
         {
             var taskModel = await _context.Tasks.FindAsync(id);
 
@@ -40,20 +41,31 @@ namespace TaskManagerAPI.Controllers
                 return NotFound();
             }
 
-            return taskModel;
+            return TaskToDTO(taskModel);
         }
 
         // PUT: api/TaskModels/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTaskModel(int id, TaskModel taskModel)
+        public async Task<IActionResult> PutTaskModel(int id, TaskDTO taskDTO)
         {
-            if (id != taskModel.Id)
+            if (id != taskDTO.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(taskModel).State = EntityState.Modified;
+            var taskModel = await _context.Tasks.FindAsync(id);
+            if (taskModel == null)
+            {
+                return NotFound();
+            }
+
+            taskModel.Title = taskDTO.Title;
+            taskModel.Description = taskDTO.Description;
+            taskModel.Status = taskDTO.Status;
+            taskModel.Priority = taskDTO.Priority;
+            taskModel.UpdatedAt = DateTime.UtcNow; // because we are currently updating it
+            taskModel.DueDate = taskDTO.DueDate;
 
             try
             {
@@ -77,8 +89,20 @@ namespace TaskManagerAPI.Controllers
         // POST: api/TaskModels
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<TaskModel>> PostTaskModel(TaskModel taskModel)
+        public async Task<ActionResult<TaskDTO>> PostTaskModel(TaskDTO taskDTO)
         {
+            var taskModel = new TaskModel
+            {
+                Title = taskDTO.Title,
+                Description = taskDTO.Description,
+                Status = taskDTO.Status,
+                Priority = taskDTO.Priority,
+                DueDate = taskDTO.DueDate,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+
             _context.Tasks.Add(taskModel);
             await _context.SaveChangesAsync();
 
@@ -105,5 +129,20 @@ namespace TaskManagerAPI.Controllers
         {
             return _context.Tasks.Any(e => e.Id == id);
         }
+
+
+
+
+
+        private static TaskDTO TaskToDTO(TaskModel x) =>
+            new TaskDTO
+            {
+                Id = x.Id,
+                Title = x.Title,
+                Description = x.Description,
+                Status = x.Status,
+                Priority = x.Priority,
+                DueDate = x.DueDate
+            };
     }
 }

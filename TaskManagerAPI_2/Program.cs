@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using TaskManagerAPI.Data;
+using TaskManagerAPI_2.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,8 +10,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<TaskManagerApiContext>(opt => 
-        opt.UseNpgsql("Name=ConnectionStrings:task_manaer_api_postgedb"));
+
+// Db Context 
+builder.Services.AddDbContext<TaskDbContext>(opt => opt.UseNpgsql("Name=ConnectionStrings:db"));
+
+
+
+
+
 
 
 var app = builder.Build();
