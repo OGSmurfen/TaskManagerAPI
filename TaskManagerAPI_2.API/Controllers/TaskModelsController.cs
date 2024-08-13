@@ -28,10 +28,24 @@ namespace TaskManagerAPI_2.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TaskDTO>>> GetTasks()
+        public async Task<ActionResult<IEnumerable<TaskDTO>>> GetTasks(int page = 0, int pageSize = 0)
         {
+            //var tasks = await tasksRepository.GetAllAsync();
+            //return Ok(tasks.Select(TaskToDTO).ToList()); 
+
+
+            // Currently with in-memory pagination. Will be implementing database pagination 
             var tasks = await tasksRepository.GetAllAsync();
-            return Ok(tasks.Select(TaskToDTO).ToList()); 
+
+            var totalCount = tasks.Count;
+            var totalPages = (int)Math.Ceiling((decimal)totalCount / pageSize);
+            var tasksPerPageToBeVisualized = tasks
+                                        .Skip((page - 1) * pageSize)
+                                        .Take(pageSize)
+                                        .ToList();
+
+
+            return Ok(tasksPerPageToBeVisualized.Select(TaskToDTO));
         }
 
 
