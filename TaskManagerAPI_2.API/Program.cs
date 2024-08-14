@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using TaskManagerAPI_2.Repository.RepositoryImpl;
 using TaskManagerAPI_2.Data;
 using TaskManagerAPI_2.Repository.IRepository;
+using TaskManagerAPI_2.Business.Services.IServices;
+using TaskManagerAPI_2.Business.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,8 @@ builder.Services.AddDbContext<TaskDbContext>(opt => opt.UseNpgsql("Name=Connecti
 builder.Services.AddScoped(typeof(IRepository<>), typeof(RepositoryImpl<>));
 
 builder.Services.AddScoped(typeof(ITasksRepository), typeof(TasksRepository));
+
+builder.Services.AddScoped( typeof(ITasksService), typeof(TasksService) );
 
 
 

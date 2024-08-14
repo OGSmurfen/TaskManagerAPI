@@ -26,6 +26,7 @@ namespace TaskManagerAPI_2.Repository.RepositoryImpl
         {
             IQueryable<TEntity> query = dbSet;
 
+
             if (!tracked)
             {
                 query = query.AsNoTracking();
@@ -34,7 +35,8 @@ namespace TaskManagerAPI_2.Repository.RepositoryImpl
             {
                 query = query.Where(filter);
             }
-
+            
+            
             return await query.ToListAsync();
         }
 
@@ -51,6 +53,10 @@ namespace TaskManagerAPI_2.Repository.RepositoryImpl
             }
             return await query.FirstOrDefaultAsync();
         }
+
+
+  
+
 
         public async Task RemoveAsync(TEntity entity)
         {
