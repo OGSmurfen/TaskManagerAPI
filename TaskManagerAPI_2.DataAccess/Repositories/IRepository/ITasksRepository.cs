@@ -6,6 +6,7 @@ namespace TaskManagerAPI_2.Repository.IRepository
     public interface ITasksRepository : IRepository<TaskModel>
     {
         Task<List<TaskModel>> GetByTitleAsync(string title);
+        Task<bool> RemoveByIdAsync(int id);
         Task<List<TaskModel>> GetTasksFilteredPaged
             (
             int? IdBeginning,

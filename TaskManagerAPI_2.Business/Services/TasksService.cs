@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using TaskManagerAPI_2.Business.Services.IServices;
 using TaskManagerAPI_2.DataAccess.Utilities;
 using TaskManagerAPI_2.DTOs;
@@ -48,19 +49,12 @@ namespace TaskManagerAPI_2.Business.Services
             return tasks.Select(TaskToDTO).ToList();
 
         }
-        //public async List<TaskModel> GetAllTasksFilteredPaged(TaskQueryBuilder? tasksFilter, int pageNumber = 1, int pageSize = 15)
-        //{
-        //    List<TaskDTO> tasks;
 
-        //    if (filterTask != null)
-        //    {
-        //        tasks = 
-        //    }
+        public async Task<bool> DeleteTaskById(int id)
+        {
+            return await tasksRepository.RemoveByIdAsync(id);
 
-
-        //    return 
-        //}
-
+        }
 
 
 
@@ -79,6 +73,6 @@ namespace TaskManagerAPI_2.Business.Services
                DueDate = x.DueDate
            };
 
-        
+       
     }
 }

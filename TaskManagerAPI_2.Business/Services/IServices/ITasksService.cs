@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,5 +24,6 @@ namespace TaskManagerAPI_2.Business.Services.IServices
                 DateOnly? DueDate,
                 int? pageNumber,
                 int? pageSize);
+        Task<bool> DeleteTaskById(int id);
     }
 }
