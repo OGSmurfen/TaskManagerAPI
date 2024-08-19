@@ -31,6 +31,10 @@ namespace TaskManagerAPI_2.Business.Services
             var tasks = await tasksRepository.GetAllAsync();
             return tasks.Select(TaskToDTO).ToList();
         }
+        public async Task<TaskModel> GetTaskByIdAsync(int taskId)
+        {
+            return await tasksRepository.GetAsync(task => task.Id == taskId);
+        }
         public async Task<List<TaskDTO>> GetAllTasksFilteredPaged
             (
                 int? IdBeginning,
@@ -56,9 +60,20 @@ namespace TaskManagerAPI_2.Business.Services
 
         }
 
+        public async Task<bool> CreateTask(TaskModel task)
+        {
+            await tasksRepository.CreateAsync(task);
+            await tasksRepository.SaveAsync();
 
+            return true;
+        }
 
-
+        public async Task<bool> UpdateTask(TaskModel task)
+        {
+            await tasksRepository.UpdateAsync(task);
+            await tasksRepository.SaveAsync();
+            return true;
+        }
 
 
 
@@ -73,6 +88,6 @@ namespace TaskManagerAPI_2.Business.Services
                DueDate = x.DueDate
            };
 
-       
+        
     }
 }

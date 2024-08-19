@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -72,16 +73,83 @@ namespace TaskManagerAPI_2.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<ActionResult<TaskDTO>> PostTask(TaskDTO taskDTO)
+        {
+            if (taskDTO == null || !ModelState.IsValid)
+            {
+                return BadRequest(ModelState); // 400 Bad Request
+            }
 
-            
+            var taskModel = new TaskModel
+            {
+                Title = taskDTO.Title,
+                Description = taskDTO.Description,
+                Status = taskDTO.Status,
+                Priority = taskDTO.Priority,
+                DueDate = taskDTO.DueDate,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            var success = await tasksService.CreateTask(taskModel);
+            if (success)
+            {
+                return CreatedAtAction(nameof(PostTask), new { id = taskModel.Id }, taskModel); // 201 Created
+            }
+            else
+            {
+                return StatusCode(500, "An error occurred while creating the task."); // 500 Internal Server Error
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutTask(int id, TaskDTO taskDTO)
+        {
+            if(id != taskDTO.Id)
+            {
+                return BadRequest();
+            }
+
+
+            var taskModel = await tasksService.GetTaskByIdAsync(id);
+            if (taskModel == null)
+            {
+                return NotFound();
+            }
+
+            taskModel.Title = taskDTO.Title;
+            taskModel.Description = taskDTO.Description;
+            taskModel.Status = taskDTO.Status;
+            taskModel.Priority = taskDTO.Priority;
+            taskModel.UpdatedAt = DateTime.UtcNow; // because we are currently updating it
+            taskModel.DueDate = taskDTO.DueDate;
+
+            try
+            {
+                await tasksService.UpdateTask(taskModel);
+            }catch (DBConcurrencyException)
+            {
+                if (!TaskModelExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+
+            return NoContent();
+        }
 
 
 
 
 
 
-
-            private static TaskDTO TaskToDTO(TaskModel x) =>
+        private static TaskDTO TaskToDTO(TaskModel x) =>
             new TaskDTO
             {
                 Id = x.Id,
@@ -91,5 +159,14 @@ namespace TaskManagerAPI_2.Controllers
                 Priority = x.Priority,
                 DueDate = x.DueDate
             };
+        private bool TaskModelExists(int id)
+        {
+            var task = tasksService.GetTaskByIdAsync(id);
+            if(task != null)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

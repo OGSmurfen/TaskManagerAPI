@@ -14,6 +14,7 @@ namespace TaskManagerAPI_2.Business.Services.IServices
     public interface ITasksService
     {
         Task<List<TaskDTO>> GetAllTasksAsync();
+        Task<TaskModel> GetTaskByIdAsync(int taskId);
         Task<List<TaskDTO>> GetAllTasksFilteredPaged(
                 int? IdBeginning,
                 int? IdEnd,
@@ -25,5 +26,9 @@ namespace TaskManagerAPI_2.Business.Services.IServices
                 int? pageNumber,
                 int? pageSize);
         Task<bool> DeleteTaskById(int id);
+
+        Task<bool> CreateTask(TaskModel task);
+        Task<bool> UpdateTask(TaskModel task);
+
     }
 }
